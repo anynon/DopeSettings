@@ -114,6 +114,7 @@ const PSSpecifier *appleAccountSpecifier = NULL;
       @"INTERNET_TETHERING" : @"Magical ability to give out internet",
       @"MAPS" : @"To the ocean",
       @"MOBILE_DATA_SETTINGS_ID" : @"Heating mode",
+      @"NEWS" : @"Fake News",
       @"NOTES" : @"Scribblings",
       @"NOTIFICATIONS_ID" : @"Attention grabbing options",
       @"Phone" : @"Telephone",
