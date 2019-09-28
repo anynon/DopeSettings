@@ -4,50 +4,37 @@
 
 @property (nonatomic, assign) BOOL performedActions;
 -(id)specifiers;
--(void)reload;
 -(void)substituteSpecifierNames;
 @end
 
-const PSSpecifier *appleAccountSpecifier = NULL;
-
-
-
 %hook PSUIPrefsListController
-
 
 %property (nonatomic, assign) BOOL performedActions;
 
+%new
 -(void)substituteSpecifierNames
 {
-
   NSMutableArray *specifiers = [self specifiers];
-  // laod substitute strings from plist file
-  // loading it from a file allows the tweak to use custom strings user puts in it
 
-  // NSDictionary *substituteStrings = [NSDictionary dictionaryWithContentsOfFile:@"/Library/Application Support/DopeSettings/defaults.bundle/defaults.plist"];
-  NSMutableDictionary *substituteStrings = [NSMutableDictionary dictionaryWithContentsOfFile:@"/private/var/mobile/Library/Preferences/xyz.xninja.dopesettings.plist"];
-  if(!substituteStrings)
-  {
-    substituteStrings = [[NSMutableDictionary alloc] initWithDictionary:
+  NSMutableDictionary *substituteStrings = [[NSMutableDictionary alloc] initWithDictionary:
     @{
       @"AIRPLANE_MODE" : @"No NSA mode",
       @"Bluetooth" : @"Are your teeth blue yet?",
-      @"COMPASS" : @"Tells you true North!",
       @"CONTACTS" : @"Telephone Directory",
       @"Carrier" : @"Radiation provider",
-      @"ControlCenter" : @"Control my Center",
+      @"ControlCenter" : @"The Center of Control",
       @"DISPLAY" : @"Display & Blindness",
       @"DO_NOT_DISTURB" : @"Shut up plz",
       @"General" : @"Actual settings you're looking for",
       @"INTERNET_TETHERING" : @"Magical ability to give out internet",
       @"MAPS" : @"To the ocean",
       @"MOBILE_DATA_SETTINGS_ID" : @"Heating mode",
+      @"NEWS" : @"Fake News",
       @"NOTES" : @"Scribblings",
       @"NOTIFICATIONS_ID" : @"Attention grabbing options",
       @"Phone" : @"Telephone",
-      @"Privacy" : @"High five brah",
-      @"REMINDERS" : @"To remind you of things",
-      @"Sounds" : @"Noises and stuff",
+      @"Privacy" : @"High five",
+      @"Sounds" : @"Noises n' things",
       @"VPN" : @"Alternate Spy Network",
       @"SCREEN_TIME" : @"OCD reports",
       @"MAIL" : @"Carrier Pigeons",
@@ -55,12 +42,21 @@ const PSSpecifier *appleAccountSpecifier = NULL;
       @"BATTERY_USAGE" : @"Jailbreaker OCD Center",
       @"WIFI" : @"Internet from thin air"
     }];
+  
+  // NSDictionary to capture all available specifier IDs
+  for(PSSpecifier *specifier in specifiers)
+  {
+      NSString *substitute = [substituteStrings objectForKey:specifier.identifier];
+
+      // if user has set a substitute that's not any default value, use it
+      if([substitute length])
+      {
+        specifier.name = substitute;
+        [substituteStrings setObject:specifier.name forKey:specifier.identifier];
+      }
   }
+}
 
-
-  // write available IDs and names so that user can use set their own values
-
-// - (int)numberOfSectionsInTableView:(id)arg1
 -(void)viewWillLayoutSubviews
 {
   if(!self.performedActions)
@@ -70,5 +66,4 @@ const PSSpecifier *appleAccountSpecifier = NULL;
   }
   return %orig;
 }
-
 %end
